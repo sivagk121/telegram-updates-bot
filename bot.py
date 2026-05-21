@@ -1,36 +1,46 @@
+
 import requests
 import os
 
 BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
 CHANNEL_ID = "@sivagk121"
 
+LAST_FILE = "last_update.txt"
+
 updates = []
 
-# RRB check
+# RRB
 try:
     rrb = requests.get("https://www.rrbcdg.gov.in/").status_code
     if rrb == 200:
-        updates.append("🚨 RRB: Website updated/check available")
+        updates.append("🚨 RRB update available")
 except:
     pass
 
-# SSC check
+# SSC
 try:
     ssc = requests.get("https://ssc.gov.in/").status_code
     if ssc == 200:
-        updates.append("🚨 SSC: Website updated/check available")
+        updates.append("🚨 SSC update available")
 except:
     pass
 
-# Send updates
-for message in updates:
+new_update = "\n".join(updates)
+
+old_update = ""
+if os.path.exists(LAST_FILE):
+    with open(LAST_FILE, "r") as f:
+        old_update = f.read()
+
+if new_update != old_update and new_update != "":
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
-    data = {
+    requests.post(url, data={
         "chat_id": CHANNEL_ID,
-        "text": message
-    }
+        "text": new_update
+    })
 
-    requests.post(url, data=data)
+    with open(LAST_FILE, "w") as f:
+        f.write(new_update)
 
 print("Done")
