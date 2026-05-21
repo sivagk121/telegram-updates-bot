@@ -7,38 +7,25 @@ CHANNEL_ID = "@sivagk121"
 def send(msg):
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        data={"chat_id": CHANNEL_ID,"text": msg}
+        data={"chat_id": CHANNEL_ID, "text": msg}
     )
 
-
-# Chandigarh
 try:
-    url="https://www.rrbcdg.gov.in/"
-    page=requests.get(url)
+    page = requests.get("https://www.rrbcdg.gov.in/")
+    soup = BeautifulSoup(page.text, "html.parser")
 
-    soup=BeautifulSoup(page.text,"html.parser")
+    links = soup.find_all("a")
 
-    links=soup.find_all("a")
+    count = 0
 
-    for l in links[:20]:
-
-        text=l.get_text(strip=True)
-        href=l.get("href")
+    for l in links:
+        text = l.get_text(strip=True)
+        href = l.get("href")
 
         if text and href:
 
-            if any(k in text.lower() for k in [
-                "result",
-                "notification",
-                "answer",
-                "alp",
-                "je",
-                "ntpc",
-                "recruitment"
-            ]):
-
-                send(
-f"""🚨 RRB Chandigarh
+            send(
+f"""🚨 Chandigarh Test
 
 {text}
 
@@ -46,41 +33,10 @@ f"""🚨 RRB Chandigarh
 """
 )
 
-except:
-    pass
+            count += 1
 
+        if count == 5:
+            break
 
-# SSC
-try:
-    page=requests.get("https://ssc.gov.in/")
-    soup=BeautifulSoup(page.text,"html.parser")
-
-    links=soup.find_all("a")
-
-    for l in links[:20]:
-
-        text=l.get_text(strip=True)
-        href=l.get("href")
-
-        if text and href:
-
-            if any(k in text.lower() for k in [
-                "result",
-                "notification",
-                "answer",
-                "gd",
-                "cgl",
-                "chsl"
-            ]):
-
-                send(
-f"""🚨 SSC
-
-{text}
-
-🔗 {href}
-"""
-)
-
-except:
-    pass
+except Exception as e:
+    send(str(e))
