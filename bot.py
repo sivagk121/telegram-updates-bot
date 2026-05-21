@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-BOT_TOKEN = ""8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM
+BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
 CHANNEL_ID = "@sivagk121"
 
 def send(msg):
