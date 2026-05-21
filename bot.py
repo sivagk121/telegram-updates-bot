@@ -13,40 +13,46 @@ def send(msg):
         }
     )
 
+
 try:
-    page = requests.get("https://www.rrbcdg.gov.in/")
-    soup = BeautifulSoup(page.text, "html.parser")
+    url="https://www.rrbcdg.gov.in/"
+    page=requests.get(url)
 
-    links = soup.find_all("a")
+    soup=BeautifulSoup(page.text,"html.parser")
 
-    keywords = [
+    links=soup.find_all("a")
+
+    include=[
         "result",
+        "answer key",
         "notification",
-        "notice",
-        "answer",
-        "key",
         "alp",
         "ntpc",
         "je",
         "technician",
-        "recruitment",
-        "corrigendum"
+        "cen"
     ]
 
-    count = 0
+    count=0
 
     for l in links:
-        text = l.get_text(strip=True)
-        href = l.get("href")
 
-        if (
-            text
-            and href
-            and any(k in text.lower() for k in keywords)
-        ):
+        text=l.get_text(strip=True)
+        href=l.get("href")
+
+        if not text or not href:
+            continue
+
+        low=text.lower()
+
+        if any(x in low for x in include):
+
+            # full link create
+            if not href.startswith("http"):
+                href="https://www.rrbcdg.gov.in/"+href
 
             send(
-f"""🚨 RRB Update
+f"""🚨 RRB PDF/Update
 
 {text}
 
@@ -54,12 +60,53 @@ f"""🚨 RRB Update
 """
             )
 
-            count += 1
+            count+=1
 
-        if count == 10:
+        if count==10:
             break
 
+
 except Exception as e:
-    send(f"Error: {e}")
+    send(str(e))
+
+
+# SSC
+try:
+    page=requests.get("https://ssc.gov.in/")
+    soup=BeautifulSoup(page.text,"html.parser")
+
+    links=soup.find_all("a")
+
+    for l in links:
+
+        text=l.get_text(strip=True)
+        href=l.get("href")
+
+        if not text or not href:
+            continue
+
+        if any(k in text.lower() for k in [
+            "result",
+            "answer",
+            "notification",
+            "gd",
+            "cgl",
+            "chsl"
+        ]):
+
+            if not href.startswith("http"):
+                href="https://ssc.gov.in"+href
+
+            send(
+f"""🚨 SSC Update
+
+{text}
+
+🔗 {href}
+"""
+            )
+
+except:
+    pass
 
 print("Done")
