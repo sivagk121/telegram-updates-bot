@@ -10,7 +10,6 @@ RRB_SITES = {
 "Bangalore":"https://www.rrbbnc.gov.in/"
 }
 
-
 def send(msg):
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
@@ -20,50 +19,11 @@ def send(msg):
         }
     )
 
-
-include = [
-    "result",
-    "results",
-    "answer",
-    "notification",
-    "admit",
-    "exam",
-    "score",
-    "cen",
-    "alp",
-    "ntpc",
-    "je",
-    "technician",
-    "group d",
-    "paramedical"
-]
-
-exclude = [
-    "login",
-    "candidate",
-    "skip",
-    "font",
-    "social",
-    "accessibility",
-    "fraud",
-    "helpline",
-    "office"
-]
-
-
 for board,url in RRB_SITES.items():
 
     try:
-
-        page=requests.get(
-            url,
-            timeout=10
-        )
-
-        soup=BeautifulSoup(
-            page.text,
-            "html.parser"
-        )
+        page=requests.get(url,timeout=10)
+        soup=BeautifulSoup(page.text,"html.parser")
 
         links=soup.find_all("a")
 
@@ -71,42 +31,16 @@ for board,url in RRB_SITES.items():
 
         for l in links:
 
-            text=l.get_text(
-                " ",
-                strip=True
-            )
-
+            text=l.get_text(" ",strip=True)
             href=l.get("href")
 
-            if not text or not href:
-                continue
+            if text and href and len(text)>10:
 
-
-            low=text.lower()
-
-            if (
-                any(
-                    x in low
-                    for x in include
-                )
-
-                and
-
-                not any(
-                    y in low
-                    for y in exclude
-                )
-            ):
-
-                if not href.startswith(
-                    "http"
-                ):
-
+                if not href.startswith("http"):
                     href=url+href
 
-
                 send(
-f"""🚨 {board} RRB
+f"""🚨 {board} Test
 
 {text}
 
@@ -116,10 +50,8 @@ f"""🚨 {board} RRB
 
                 count +=1
 
-
-            if count==8:
+            if count==5:
                 break
 
-
-    except:
-        pass
+    except Exception as e:
+        send(f"{board} Error:\n{e}")
