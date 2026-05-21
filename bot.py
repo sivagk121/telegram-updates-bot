@@ -1,45 +1,44 @@
-
 import requests
-import os
+from bs4 import BeautifulSoup
 
 BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
 CHANNEL_ID = "@sivagk121"
 
 updates = []
 
+# RRB notifications
 try:
-    rrb = requests.get("https://www.rrbcdg.gov.in/").status_code
-    if rrb == 200:
-        updates.append("🚨 RRB update available")
+    rrb = requests.get("https://www.rrbcdg.gov.in/")
+    soup = BeautifulSoup(rrb.text, "html.parser")
+
+    title = soup.title.text[:100]
+
+    updates.append(f"🚨 RRB Latest:\n{title}")
+
 except:
     pass
 
+
+# SSC notifications
 try:
-    ssc = requests.get("https://ssc.gov.in/").status_code
-    if ssc == 200:
-        updates.append("🚨 SSC update available")
+    ssc = requests.get("https://ssc.gov.in/")
+    soup2 = BeautifulSoup(ssc.text, "html.parser")
+
+    title2 = soup2.title.text[:100]
+
+    updates.append(f"🚨 SSC Latest:\n{title2}")
+
 except:
     pass
 
-new_update = "\n".join(updates)
 
-# save previous update in GitHub file
-LAST_FILE = "last_update.txt"
+for msg in updates:
+    requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        data={
+            "chat_id": CHANNEL_ID,
+            "text": msg
+        }
+    )
 
-old = ""
-if os.path.exists(LAST_FILE):
-    with open(LAST_FILE,"r") as f:
-        old = f.read()
-
-if new_update != old and new_update != "":
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
-    requests.post(url,data={
-        "chat_id": CHANNEL_ID,
-        "text": new_update
-    })
-
-    with open(LAST_FILE,"w") as f:
-        f.write(new_update)
-
-print("Done")
+print("done")
