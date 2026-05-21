@@ -7,55 +7,58 @@ CHANNEL_ID = "@sivagk121"
 def send(msg):
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        data={"chat_id":CHANNEL_ID,"text":msg}
+        data={"chat_id": CHANNEL_ID, "text": msg}
     )
 
-try:
-    url="https://www.rrbcdg.gov.in/employment-notices.php"
 
-    page=requests.get(url)
-    soup=BeautifulSoup(page.text,"html.parser")
+URLS = [
+("RRB Chandigarh","https://www.rrbcdg.gov.in/employment-notices.php"),
+("SSC","https://ssc.gov.in/")
+]
 
-    links=soup.find_all("a")
+KEYWORDS = [
+"result",
+"answer key",
+"notification",
+"notice",
+"exam date",
+"admit card",
+"score card",
+"corrigendum",
+"pdf"
+]
 
-    count=0
+for name,url in URLS:
 
-    for l in links:
+    try:
+        page=requests.get(url,timeout=10)
+        soup=BeautifulSoup(page.text,"html.parser")
 
-        text=l.get_text(strip=True)
-        href=l.get("href")
+        links=soup.find_all("a")
 
-        if not text or not href:
-            continue
+        for l in links:
 
-        low=text.lower()
+            text=l.get_text(" ",strip=True)
+            href=l.get("href")
 
-        if any(k in low for k in [
-            "result",
-            "answer",
-            "notification",
-            "corrigendum",
-            "notice",
-            "exam",
-            "pdf"
-        ]):
+            if not text or not href:
+                continue
 
-            if not href.startswith("http"):
-                href="https://www.rrbcdg.gov.in/"+href
+            low=text.lower()
 
-            send(
-f"""🚨 RRB Chandigarh Update
+            if any(k in low for k in KEYWORDS):
+
+                if not href.startswith("http"):
+                    href=url+"/"+href
+
+                send(
+f"""🚨 {name}
 
 {text}
 
 🔗 {href}
 """
-            )
+                )
 
-            count +=1
-
-        if count==10:
-            break
-
-except Exception as e:
-    send(str(e))
+    except:
+        pass
