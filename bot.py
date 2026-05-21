@@ -11,12 +11,10 @@ updates = [
 
 for message in updates:
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
     data = {
         "chat_id": CHANNEL_ID,
         "text": message
     }
+    requests.post(url, data=data)
 
-    response = requests.post(url, data=data)
-    print(response.text)
 print("NEW CODE RUNNING")
