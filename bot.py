@@ -4,54 +4,83 @@ from bs4 import BeautifulSoup
 BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
 CHANNEL_ID = "@sivagk121"
 
-RRB_SITES = {
-"Ahmedabad":"https://www.rrbahmedabad.gov.in/",
-"Ajmer":"https://rrbajmer.gov.in/",
-"Bangalore":"https://www.rrbbnc.gov.in/",
-"Chandigarh":"https://www.rrbcdg.gov.in/",
-"Chennai":"https://www.rrbchennai.gov.in/",
-"Guwahati":"https://www.rrbguwahati.gov.in/",
-"Kolkata":"https://rrbkolkata.gov.in/",
-"Mumbai":"https://rrbmumbai.gov.in/",
-"Patna":"https://rrbpatna.gov.in/",
-"Secunderabad":"https://rrbsecunderabad.gov.in/"
-}
+def send(msg):
+    requests.post(
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        data={"chat_id": CHANNEL_ID,"text": msg}
+    )
 
-for name,url in RRB_SITES.items():
-    try:
-        r = requests.get(url,timeout=10)
-        soup = BeautifulSoup(r.text,"html.parser")
 
-        title = soup.title.text[:80]
+# Chandigarh
+try:
+    url="https://www.rrbcdg.gov.in/"
+    page=requests.get(url)
 
-        msg=f"🚨 {name} RRB:\n{title}"
+    soup=BeautifulSoup(page.text,"html.parser")
 
-        requests.post(
-            f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-            data={
-                "chat_id":CHANNEL_ID,
-                "text":msg
-            }
-        )
+    links=soup.find_all("a")
 
-    except:
-        pass
+    for l in links[:20]:
+
+        text=l.get_text(strip=True)
+        href=l.get("href")
+
+        if text and href:
+
+            if any(k in text.lower() for k in [
+                "result",
+                "notification",
+                "answer",
+                "alp",
+                "je",
+                "ntpc",
+                "recruitment"
+            ]):
+
+                send(
+f"""🚨 RRB Chandigarh
+
+{text}
+
+🔗 {href}
+"""
+)
+
+except:
+    pass
 
 
 # SSC
 try:
-    s=requests.get("https://ssc.gov.in/")
-    soup=BeautifulSoup(s.text,"html.parser")
+    page=requests.get("https://ssc.gov.in/")
+    soup=BeautifulSoup(page.text,"html.parser")
 
-    title=soup.title.text
+    links=soup.find_all("a")
 
-    requests.post(
-        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        data={
-            "chat_id":CHANNEL_ID,
-            "text":"🚨 SSC:\n"+title
-        }
-    )
+    for l in links[:20]:
+
+        text=l.get_text(strip=True)
+        href=l.get("href")
+
+        if text and href:
+
+            if any(k in text.lower() for k in [
+                "result",
+                "notification",
+                "answer",
+                "gd",
+                "cgl",
+                "chsl"
+            ]):
+
+                send(
+f"""🚨 SSC
+
+{text}
+
+🔗 {href}
+"""
+)
 
 except:
     pass
