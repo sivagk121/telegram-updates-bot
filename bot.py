@@ -7,7 +7,10 @@ CHANNEL_ID = "@sivagk121"
 def send(msg):
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        data={"chat_id": CHANNEL_ID, "text": msg}
+        data={
+            "chat_id": CHANNEL_ID,
+            "text": msg
+        }
     )
 
 try:
@@ -16,16 +19,34 @@ try:
 
     links = soup.find_all("a")
 
+    keywords = [
+        "result",
+        "notification",
+        "notice",
+        "answer",
+        "key",
+        "alp",
+        "ntpc",
+        "je",
+        "technician",
+        "recruitment",
+        "corrigendum"
+    ]
+
     count = 0
 
     for l in links:
         text = l.get_text(strip=True)
         href = l.get("href")
 
-        if text and href and len(text) > 10:
+        if (
+            text
+            and href
+            and any(k in text.lower() for k in keywords)
+        ):
 
             send(
-f"""🚨 Chandigarh Test
+f"""🚨 RRB Update
 
 {text}
 
@@ -35,8 +56,10 @@ f"""🚨 Chandigarh Test
 
             count += 1
 
-        if count == 15:
+        if count == 10:
             break
 
 except Exception as e:
-    send(str(e))
+    send(f"Error: {e}")
+
+print("Done")
