@@ -4,6 +4,19 @@ from bs4 import BeautifulSoup
 BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
 CHANNEL_ID = "@sivagk121"
 
+RRB_SITES = {
+"Chandigarh":"https://www.rrbcdg.gov.in/",
+"Chennai":"https://www.rrbchennai.gov.in/",
+"Guwahati":"https://www.rrbguwahati.gov.in/",
+"Kolkata":"https://rrbkolkata.gov.in/",
+"Ajmer":"https://rrbajmer.gov.in/",
+"Secunderabad":"https://rrbsecunderabad.gov.in/",
+"Mumbai":"https://rrbmumbai.gov.in/",
+"Patna":"https://rrbpatna.gov.in/",
+"Bangalore":"https://www.rrbbnc.gov.in/"
+}
+
+
 def send(msg):
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
@@ -14,78 +27,93 @@ def send(msg):
     )
 
 
-URL = "https://www.rrbcdg.gov.in/employment-notices.php"
+include = [
+    "alp",
+    "ntpc",
+    "je",
+    "technician",
+    "result",
+    "answer",
+    "notification",
+    "cen"
+]
 
-try:
-    page = requests.get(URL)
-    soup = BeautifulSoup(page.text,"html.parser")
-
-    links = soup.find_all("a")
-
-    include = [
-        "result",
-        "answer",
-        "notice",
-        "notification",
-        "exam",
-        "score",
-        "admit",
-        "cen",
-        "alp",
-        "ntpc",
-        "je",
-        "technician"
-    ]
-
-    exclude = [
-        "skip",
-        "font",
-        "social",
-        "accessibility",
-        "india",
-        "railway colony",
-        "office",
-        "station",
-        "maps",
-        "candidate",
-        "login"
-    ]
+exclude = [
+    "login",
+    "candidate",
+    "skip",
+    "font",
+    "social",
+    "accessibility"
+]
 
 
-    count = 0
+for board,url in RRB_SITES.items():
 
-    for l in links:
+    try:
 
-        text = l.get_text(" ",strip=True)
-        href = l.get("href")
+        page=requests.get(url,timeout=10)
 
-        if not text or not href:
-            continue
+        soup=BeautifulSoup(
+            page.text,
+            "html.parser"
+        )
 
-        low = text.lower()
+        links=soup.find_all("a")
 
-        if (
-            any(x in low for x in include)
-            and not any(y in low for y in exclude)
-        ):
+        count=0
 
-            if not href.startswith("http"):
-                href = "https://www.rrbcdg.gov.in/" + href.lstrip("/")
+        for l in links:
 
-            send(
-f"""🚨 RRB Alert
+            text=l.get_text(
+                " ",
+                strip=True
+            )
+
+            href=l.get("href")
+
+            if not text or not href:
+                continue
+
+
+            low=text.lower()
+
+            if (
+                any(
+                    x in low
+                    for x in include
+                )
+
+                and
+
+                not any(
+                    y in low
+                    for y in exclude
+                )
+            ):
+
+                if not href.startswith(
+                    "http"
+                ):
+
+                    href=url+href
+
+
+                send(
+f"""🚨 {board} RRB
 
 {text}
 
 🔗 {href}
 """
-            )
+                )
 
-            count +=1
-
-        if count == 10:
-            break
+                count +=1
 
 
-except Exception as e:
-    send(str(e))
+            if count==5:
+                break
+
+
+    except:
+        pass
