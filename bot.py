@@ -9,8 +9,7 @@ updates = []
 try:
     rrb = requests.get("https://www.rrbcdg.gov.in/")
     soup = BeautifulSoup(rrb.text, "html.parser")
-
-    title = soup.title.text[:100]
+    title = soup.title.text
 
     updates.append(f"🚨 RRB Latest:\n{title}")
 
@@ -20,11 +19,10 @@ except:
 
 try:
     ssc = requests.get("https://ssc.gov.in/")
-    soup2 = BeautifulSoup(ssc.text, "html.parser")
+    soup = BeautifulSoup(ssc.text, "html.parser")
+    title = soup.title.text
 
-    title2 = soup2.title.text[:100]
-
-    updates.append(f"🚨 SSC Latest:\n{title2}")
+    updates.append(f"🚨 SSC Latest:\n{title}")
 
 except:
     pass
@@ -39,4 +37,4 @@ for msg in updates:
         }
     )
 
-print("done")
+print("Done")
