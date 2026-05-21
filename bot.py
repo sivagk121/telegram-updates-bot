@@ -5,11 +5,8 @@ import os
 BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
 CHANNEL_ID = "@sivagk121"
 
-LAST_FILE = "last_update.txt"
-
 updates = []
 
-# RRB
 try:
     rrb = requests.get("https://www.rrbcdg.gov.in/").status_code
     if rrb == 200:
@@ -17,7 +14,6 @@ try:
 except:
     pass
 
-# SSC
 try:
     ssc = requests.get("https://ssc.gov.in/").status_code
     if ssc == 200:
@@ -27,20 +23,23 @@ except:
 
 new_update = "\n".join(updates)
 
-old_update = ""
-if os.path.exists(LAST_FILE):
-    with open(LAST_FILE, "r") as f:
-        old_update = f.read()
+# save previous update in GitHub file
+LAST_FILE = "last_update.txt"
 
-if new_update != old_update and new_update != "":
+old = ""
+if os.path.exists(LAST_FILE):
+    with open(LAST_FILE,"r") as f:
+        old = f.read()
+
+if new_update != old and new_update != "":
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
-    requests.post(url, data={
+    requests.post(url,data={
         "chat_id": CHANNEL_ID,
         "text": new_update
     })
 
-    with open(LAST_FILE, "w") as f:
+    with open(LAST_FILE,"w") as f:
         f.write(new_update)
 
 print("Done")
