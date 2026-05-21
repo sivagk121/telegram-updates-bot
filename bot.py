@@ -13,6 +13,7 @@ def send(msg):
         }
     )
 
+
 URL = "https://www.rrbcdg.gov.in/employment-notices.php"
 
 try:
@@ -20,6 +21,36 @@ try:
     soup = BeautifulSoup(page.text,"html.parser")
 
     links = soup.find_all("a")
+
+    include = [
+        "result",
+        "answer",
+        "notice",
+        "notification",
+        "exam",
+        "score",
+        "admit",
+        "cen",
+        "alp",
+        "ntpc",
+        "je",
+        "technician"
+    ]
+
+    exclude = [
+        "skip",
+        "font",
+        "social",
+        "accessibility",
+        "india",
+        "railway colony",
+        "office",
+        "station",
+        "maps",
+        "candidate",
+        "login"
+    ]
+
 
     count = 0
 
@@ -31,13 +62,18 @@ try:
         if not text or not href:
             continue
 
-        if len(text) > 15:
+        low = text.lower()
+
+        if (
+            any(x in low for x in include)
+            and not any(y in low for y in exclude)
+        ):
 
             if not href.startswith("http"):
                 href = "https://www.rrbcdg.gov.in/" + href.lstrip("/")
 
             send(
-f"""🚨 RRB Notice
+f"""🚨 RRB Alert
 
 {text}
 
@@ -49,6 +85,7 @@ f"""🚨 RRB Notice
 
         if count == 10:
             break
+
 
 except Exception as e:
     send(str(e))
