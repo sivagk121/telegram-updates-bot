@@ -19,49 +19,38 @@ try:
     page = requests.get(URL, timeout=20)
     soup = BeautifulSoup(page.text, "html.parser")
 
-    links = soup.find_all("a")
+    rows = soup.get_text("\n", strip=True)
 
-    count = 0
+    keywords = [
+        "Result",
+        "Results",
+        "Cut Off",
+        "Technician",
+        "ALP",
+        "JE",
+        "NTPC",
+        "DV",
+        "Written"
+    ]
 
-    for l in links:
+    found = []
 
-        text = l.get_text(" ", strip=True)
-        href = l.get("href")
+    for k in keywords:
+        if k.lower() in rows.lower():
+            found.append(k)
 
-        if not text or not href:
-            continue
+    if found:
 
-        low = text.lower()
+        send(
+f"""🚨 RRB Ajmer
 
-        if any(x in low for x in [
-            "result",
-            "cutoff",
-            "cut off",
-            "score",
-            "answer",
-            "technician",
-            "alp",
-            "je",
-            "ntpc",
-            "cen"
-        ]):
+Detected:
 
-            if not href.startswith("http"):
-                href = "https://rrbajmer.gov.in/" + href.lstrip("/")
+{", ".join(found)}
 
-            send(
-f"""🚨 RRB Ajmer Update
-
-{text}
-
-📄 {href}
+🔗 {URL}
 """
-            )
-
-            count +=1
-
-        if count == 10:
-            break
+        )
 
 except Exception as e:
     send(str(e))
