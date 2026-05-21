@@ -6,7 +6,6 @@ CHANNEL_ID = "@sivagk121"
 
 updates = []
 
-# RRB notifications
 try:
     rrb = requests.get("https://www.rrbcdg.gov.in/")
     soup = BeautifulSoup(rrb.text, "html.parser")
@@ -19,7 +18,6 @@ except:
     pass
 
 
-# SSC notifications
 try:
     ssc = requests.get("https://ssc.gov.in/")
     soup2 = BeautifulSoup(ssc.text, "html.parser")
