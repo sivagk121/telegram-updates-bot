@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
+BOT_TOKEN = ""8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM
 CHANNEL_ID = "@sivagk121"
 
 def send(msg):
@@ -18,23 +18,25 @@ try:
 
     count = 0
 
-    
-for l in links:
-    text = l.get_text(strip=True)
-    href = l.get("href")
+    for l in links:
+        text = l.get_text(strip=True)
+        href = l.get("href")
 
-    if text and href and len(text) > 10:
+        if text and href and len(text) > 10:
 
-        send(
+            send(
 f"""🚨 Chandigarh Test
 
 {text}
 
 🔗 {href}
 """
-)
+            )
 
-        count += 1
+            count += 1
 
-    if count == 15:
-        break
+        if count == 15:
+            break
+
+except Exception as e:
+    send(str(e))
