@@ -18,13 +18,14 @@ try:
 
     count = 0
 
-    for l in links:
-        text = l.get_text(strip=True)
-        href = l.get("href")
+    
+for l in links:
+    text = l.get_text(strip=True)
+    href = l.get("href")
 
-        if text and href:
+    if text and href and len(text) > 10:
 
-            send(
+        send(
 f"""🚨 Chandigarh Test
 
 {text}
@@ -33,10 +34,7 @@ f"""🚨 Chandigarh Test
 """
 )
 
-            count += 1
+        count += 1
 
-        if count == 5:
-            break
-
-except Exception as e:
-    send(str(e))
+    if count == 15:
+        break
