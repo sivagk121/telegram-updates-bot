@@ -5,14 +5,8 @@ BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
 CHANNEL_ID = "@sivagk121"
 
 RRB_SITES = {
-"Chandigarh":"https://www.rrbcdg.gov.in/",
-"Chennai":"https://www.rrbchennai.gov.in/",
-"Guwahati":"https://www.rrbguwahati.gov.in/",
-"Kolkata":"https://rrbkolkata.gov.in/",
-"Ajmer":"https://rrbajmer.gov.in/",
 "Secunderabad":"https://rrbsecunderabad.gov.in/",
-"Mumbai":"https://rrbmumbai.gov.in/",
-"Patna":"https://rrbpatna.gov.in/",
+"Chennai":"https://www.rrbchennai.gov.in/",
 "Bangalore":"https://www.rrbbnc.gov.in/"
 }
 
@@ -28,14 +22,20 @@ def send(msg):
 
 
 include = [
+    "result",
+    "results",
+    "answer",
+    "notification",
+    "admit",
+    "exam",
+    "score",
+    "cen",
     "alp",
     "ntpc",
     "je",
     "technician",
-    "result",
-    "answer",
-    "notification",
-    "cen"
+    "group d",
+    "paramedical"
 ]
 
 exclude = [
@@ -44,7 +44,10 @@ exclude = [
     "skip",
     "font",
     "social",
-    "accessibility"
+    "accessibility",
+    "fraud",
+    "helpline",
+    "office"
 ]
 
 
@@ -52,7 +55,10 @@ for board,url in RRB_SITES.items():
 
     try:
 
-        page=requests.get(url,timeout=10)
+        page=requests.get(
+            url,
+            timeout=10
+        )
 
         soup=BeautifulSoup(
             page.text,
@@ -111,7 +117,7 @@ f"""🚨 {board} RRB
                 count +=1
 
 
-            if count==5:
+            if count==8:
                 break
 
 
