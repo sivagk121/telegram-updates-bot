@@ -7,58 +7,77 @@ CHANNEL_ID = "@sivagk121"
 def send(msg):
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-        data={"chat_id": CHANNEL_ID, "text": msg}
+        data={
+            "chat_id": CHANNEL_ID,
+            "text": msg
+        }
     )
 
 
-URLS = [
-("RRB Chandigarh","https://www.rrbcdg.gov.in/employment-notices.php"),
-("SSC","https://ssc.gov.in/")
-]
+URL = "https://www.rrbcdg.gov.in/employment-notices.php"
 
-KEYWORDS = [
-"result",
-"answer key",
-"notification",
-"notice",
-"exam date",
-"admit card",
-"score card",
-"corrigendum",
-"pdf"
-]
+try:
+    page = requests.get(URL, timeout=10)
+    soup = BeautifulSoup(page.text, "html.parser")
 
-for name,url in URLS:
+    links = soup.find_all("a")
 
-    try:
-        page=requests.get(url,timeout=10)
-        soup=BeautifulSoup(page.text,"html.parser")
+    include = [
+        "result",
+        "answer",
+        "notification",
+        "corrigendum",
+        "exam",
+        "score",
+        "admit",
+        "key",
+        "pdf"
+    ]
 
-        links=soup.find_all("a")
+    exclude = [
+        "recruitment notices",
+        "candidate",
+        "login",
+        "medical",
+        "index"
+    ]
 
-        for l in links:
+    count = 0
 
-            text=l.get_text(" ",strip=True)
-            href=l.get("href")
+    for l in links:
 
-            if not text or not href:
-                continue
+        text = l.get_text(" ", strip=True)
+        href = l.get("href")
 
-            low=text.lower()
+        if not text or not href:
+            continue
 
-            if any(k in low for k in KEYWORDS):
+        low = text.lower()
 
-                if not href.startswith("http"):
-                    href=url+"/"+href
+        if (
+            any(x in low for x in include)
+            and not any(y in low for y in exclude)
+        ):
 
-                send(
-f"""🚨 {name}
+            if not href.startswith("http"):
+                href = "https://www.rrbcdg.gov.in/" + href.lstrip("/")
+
+            send(
+f"""🚨 RRB Chandigarh Alert
 
 {text}
 
 🔗 {href}
 """
-                )
+            )
 
-    except:
-        pass
+            count += 1
+
+        if count == 10:
+            break
+
+
+except Exception as e:
+    send("Error:\n"+str(e))
+
+print("Done")
