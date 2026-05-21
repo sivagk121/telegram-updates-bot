@@ -13,26 +13,13 @@ def send(msg):
         }
     )
 
-URL = "https://rrbbilaspur.gov.in/result.html"
+URL = "https://rrbajmer.gov.in/Results"
 
 try:
     page = requests.get(URL, timeout=20)
     soup = BeautifulSoup(page.text, "html.parser")
 
     links = soup.find_all("a")
-
-    include = [
-        "result",
-        "cutoff",
-        "cut off",
-        "answer",
-        "score",
-        "technician",
-        "alp",
-        "je",
-        "ntpc",
-        "pdf"
-    ]
 
     count = 0
 
@@ -46,13 +33,24 @@ try:
 
         low = text.lower()
 
-        if any(x in low for x in include):
+        if any(x in low for x in [
+            "result",
+            "cutoff",
+            "cut off",
+            "score",
+            "answer",
+            "technician",
+            "alp",
+            "je",
+            "ntpc",
+            "cen"
+        ]):
 
             if not href.startswith("http"):
-                href = "https://rrbbilaspur.gov.in/" + href.lstrip("/")
+                href = "https://rrbajmer.gov.in/" + href.lstrip("/")
 
             send(
-f"""🚨 RRB Bilaspur Update
+f"""🚨 RRB Ajmer Update
 
 {text}
 
@@ -60,7 +58,7 @@ f"""🚨 RRB Bilaspur Update
 """
             )
 
-            count += 1
+            count +=1
 
         if count == 10:
             break
