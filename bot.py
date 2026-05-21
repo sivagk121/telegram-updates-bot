@@ -4,37 +4,54 @@ from bs4 import BeautifulSoup
 BOT_TOKEN = "8686311310:AAHAALy0hOh-2dp98wo4rQFVmcw-taEd7NM"
 CHANNEL_ID = "@sivagk121"
 
-updates = []
+RRB_SITES = {
+"Ahmedabad":"https://www.rrbahmedabad.gov.in/",
+"Ajmer":"https://rrbajmer.gov.in/",
+"Bangalore":"https://www.rrbbnc.gov.in/",
+"Chandigarh":"https://www.rrbcdg.gov.in/",
+"Chennai":"https://www.rrbchennai.gov.in/",
+"Guwahati":"https://www.rrbguwahati.gov.in/",
+"Kolkata":"https://rrbkolkata.gov.in/",
+"Mumbai":"https://rrbmumbai.gov.in/",
+"Patna":"https://rrbpatna.gov.in/",
+"Secunderabad":"https://rrbsecunderabad.gov.in/"
+}
 
+for name,url in RRB_SITES.items():
+    try:
+        r = requests.get(url,timeout=10)
+        soup = BeautifulSoup(r.text,"html.parser")
+
+        title = soup.title.text[:80]
+
+        msg=f"🚨 {name} RRB:\n{title}"
+
+        requests.post(
+            f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+            data={
+                "chat_id":CHANNEL_ID,
+                "text":msg
+            }
+        )
+
+    except:
+        pass
+
+
+# SSC
 try:
-    rrb = requests.get("https://www.rrbcdg.gov.in/")
-    soup = BeautifulSoup(rrb.text, "html.parser")
-    title = soup.title.text
+    s=requests.get("https://ssc.gov.in/")
+    soup=BeautifulSoup(s.text,"html.parser")
 
-    updates.append(f"🚨 RRB Latest:\n{title}")
+    title=soup.title.text
 
-except:
-    pass
-
-
-try:
-    ssc = requests.get("https://ssc.gov.in/")
-    soup = BeautifulSoup(ssc.text, "html.parser")
-    title = soup.title.text
-
-    updates.append(f"🚨 SSC Latest:\n{title}")
-
-except:
-    pass
-
-
-for msg in updates:
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
         data={
-            "chat_id": CHANNEL_ID,
-            "text": msg
+            "chat_id":CHANNEL_ID,
+            "text":"🚨 SSC:\n"+title
         }
     )
 
-print("Done")
+except:
+    pass
