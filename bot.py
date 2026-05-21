@@ -19,3 +19,4 @@ for message in updates:
 
     response = requests.post(url, data=data)
     print(response.text)
+print("NEW CODE RUNNING")
